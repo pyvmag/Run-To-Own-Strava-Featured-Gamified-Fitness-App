@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Run-to-Own | Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://unpkg.com/maplibre-gl@3.5.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/home.css" />
+</head>
+<body>
+
+<!-- 👤 Navbar -->
+<nav>
+    <img src="/images/logo.png" alt="Logo" class="logo" />
+    <span class="app-title">Run-to-Own</span>
+    <a href="/profile" class="profile-link">Profile</a>
+</nav>
+
+<!-- 🏃 Friends' Runs Section -->
+<section id="friends-runs">
+    <h2>Recent Runs</h2>
+    <div id="feed-container" class="feed"></div>
+    <div id="loading-spinner" style="display:none;">Loading...</div>
+    <button id="load-more-btn">Load More</button>
+    <!-- Inserted below your <button> inside #friends-runs section -->
+    <div id="no-more-msg" style="display:none; text-align:center; margin:10px; color:#888;">No more runs to load.</div>
+</section>
+<!-- Scripts -->
+<script src="https://unpkg.com/maplibre-gl@3.5.2/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/@mapbox/polyline"></script>
+<script src="/js/home.js"></script>
+
+</body>
+</html>

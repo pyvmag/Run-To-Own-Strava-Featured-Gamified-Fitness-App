@@ -1,0 +1,160 @@
+/* ===== Global Styles ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: #f4f5f7;
+    color: #333;
+}
+
+/* ===== Navbar ===== */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    background: #ffffff;
+    border-bottom: 1px solid #e6e6e6;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav .logo {
+    height: 42px;
+}
+
+nav .app-title {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #fc4c02;
+}
+
+nav .profile-link {
+    color: #fc4c02;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+nav .profile-link:hover {
+    color: #ff6a2d;
+}
+
+/* ===== Feed Container ===== */
+.feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 620px;
+    margin: 2rem auto;
+    gap: 24px;
+    padding: 0 10px;
+}
+
+/* ===== Individual Run Post ===== */
+.run-post {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.6s ease, opacity 0.6s ease, box-shadow 0.2s ease;
+}
+
+.run-post.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.run-post:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Post Header ===== */
+.run-post-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.run-post-header .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid #fc4c02;
+    box-shadow: 0 0 4px rgba(0,0,0,0.08);
+}
+
+.run-post-header span {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* ===== Map or Media Section ===== */
+.run-map {
+    width: 100%;
+    height: 220px;
+    background: #e9ecef;
+}
+
+/* ===== Post Details ===== */
+.run-post-details {
+    padding: 14px 16px;
+}
+
+.run-post-details h3 {
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+    color: #222;
+}
+.post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;            /* 🔘 Makes it circular */
+    object-fit: cover;
+    border: 2px solid #fc4c02;}/* ✨ Orange border for pop */
+
+
+.run-post-details p {
+    margin: 4px 0;
+    font-size: 0.92rem;
+    color: #555;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .feed {
+        gap: 18px;
+    }
+    .run-post {
+        border-radius: 12px;
+    }
+    .run-map {
+        height: 180px;
+    }
+}
+#loading-spinner {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #fc4c02;
+    animation: pulse 1s infinite;
+    text-align: center;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+#no-more-msg {
+    font-size: 0.92rem;
+    color: #888;
+    margin: 10px 0;
+    text-align: center;
+}

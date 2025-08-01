@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Run-to-Own | Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/profile.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<nav>
+    <img src="/images/logo.png" alt="Logo" class="logo" />
+    <span class="app-title">Run-to-Own</span>
+    <a href="/home" class="profile-link">Home</a>
+</nav>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <img id="profile-avatar" class="profile-avatar" src="/images/default-avatar.png" alt="Profile Picture">
+        <h1 id="athlete-name">Athlete Name</h1>
+        <p id="athlete-location">City, Country</p>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card"><p>Total Distance</p><h2 id="total-distance">0 km</h2></div>
+        <div class="stat-card"><p>Total Runs</p><h2 id="total-runs">0</h2></div>
+        <div class="stat-card"><p>Total Time</p><h2 id="total-time">0 h</h2></div>
+        <div class="stat-card"><p>Elevation Gain</p><h2 id="total-elevation">0 m</h2></div>
+    </div>
+
+    <section class="chart-section">
+        <h2>Weekly Distance</h2>
+        <canvas id="weeklyChart" width="400" height="200"></canvas>
+    </section>
+
+    <section class="gear-section">
+        <h2>Gear</h2>
+        <ul id="gear-list"></ul>
+    </section>
+</div>
+
+<script src="/js/profile.js"></script>
+</body>
+</html>
