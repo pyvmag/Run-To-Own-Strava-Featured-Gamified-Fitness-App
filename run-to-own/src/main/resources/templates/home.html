@@ -3,32 +3,71 @@
 <head>
     <meta charset="UTF-8" />
     <title>Run-to-Own | Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://unpkg.com/maplibre-gl@3.5.2/dist/maplibre-gl.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/home.css" />
 </head>
 <body>
+<div id="loader">
+    <div class="loader-content">
+        <!-- You can swap this out for SVG, animation, etc -->
+        <img src="/images/cycle_route.gif"  class="loader-gif" alt="Loading animation" />
+        <p>Loading your journey...</p>
+    </div>
+</div>
 
 <!-- 👤 Navbar -->
 <nav>
-    <img src="/images/logo.png" alt="Logo" class="logo" />
+    <img src="/images/logo.png" alt="Run-to-Own Logo" class="logo" />
     <span class="app-title">Run-to-Own</span>
+    <button id="theme-switch" aria-label="Toggle Theme">🌗</button>
     <a href="/profile" class="profile-link">Profile</a>
 </nav>
 
 <!-- 🏃 Friends' Runs Section -->
-<section id="friends-runs">
+<main id="friends-runs">
     <h2>Recent Runs</h2>
     <div id="feed-container" class="feed"></div>
-    <div id="loading-spinner" style="display:none;">Loading...</div>
-    <button id="load-more-btn">Load More</button>
-    <!-- Inserted below your <button> inside #friends-runs section -->
-    <div id="no-more-msg" style="display:none; text-align:center; margin:10px; color:#888;">No more runs to load.</div>
-</section>
-<!-- Scripts -->
+    <div id="loading-spinner" class="spinner" style="display:none;">Loading...</div>
+    <button id="load-more-btn" class="load-more-btn">Load More</button>
+    <div id="no-more-msg" class="no-more-msg" style="display:none;">No more runs to load.</div>
+</main>
+
+<!-- 🔧 Scripts -->
 <script src="https://unpkg.com/maplibre-gl@3.5.2/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/@mapbox/polyline"></script>
 <script src="/js/home.js"></script>
+
+<script>
+    // 🌓 Apply system theme if dark
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('dark');
+    }
+
+    // 🌓 Manual theme toggle
+    document.getElementById('theme-switch').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+    });
+
+    // 🪄 Nav hide on scroll down, show on scroll up
+    const nav = document.querySelector('nav');
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > lastScrollY) {
+        nav.classList.add('nav-hidden');
+      } else {
+        nav.classList.remove('nav-hidden');
+      }
+      lastScrollY = window.scrollY;
+    });
+</script>
+<script>
+    console.log('Theme toggle wired');
+    document.getElementById('theme-switch').addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      console.log('Theme toggled');
+    });
+</script>
 
 </body>
 </html>

@@ -42,4 +42,29 @@ public class StravaController {
         }
 
         return activities;
-    }}
+    }
+    @GetMapping("/strava/activities/all")
+    @ResponseBody
+    public List<Map<String, Object>> getAllActivities(HttpSession session) {
+        String accessToken = (String) session.getAttribute("access_token");
+        if (accessToken == null) return List.of();
+
+        List<Map<String, Object>> allActivities = new ArrayList<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        int page = 1;
+        while (true) {
+            String url = "https://www.strava.com/api/v3/athlete/activities?per_page=100&page=" + page;
+            ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), List.class);
+
+            List<Map<String, Object>> pageActivities = response.getBody();
+            if (pageActivities == null || pageActivities.isEmpty()) break;
+
+            allActivities.addAll(pageActivities);
+            page++;
+        }
+
+        return allActivities;
+    }
+}
