@@ -1,100 +1,133 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ===== Athlete Profile =====
+  fetch('/strava/athlete')
+    .then(res => res.json())
+    .then(athlete => {
+      if (!athlete) return;
+      document.getElementById('athlete-name').innerText = `${athlete.firstname || ''} ${athlete.lastname || ''}`;
+      document.getElementById('athlete-location').innerText = [athlete.city, athlete.country].filter(Boolean).join(', ') || 'Unknown';
 
-    // ===== Fetch Athlete Profile =====
-    fetch('/strava/athlete')
-        .then(res => res.json())
-        .then(athlete => {
-            if (!athlete) return;
-            document.getElementById('athlete-name').innerText =
-                `${athlete.firstname || ''} ${athlete.lastname || ''}`;
-            document.getElementById('athlete-location').innerText =
-                [athlete.city, athlete.country].filter(Boolean).join(', ') || 'Unknown';
+      const avatar = document.getElementById('profile-avatar');
+      avatar.src = athlete.profile || '/images/default-avatar.png';
+      avatar.alt = `${athlete.firstname || 'Athlete'} Profile Picture`;
 
-            const avatar = document.getElementById('profile-avatar');
-            avatar.src = athlete.profile || '/images/default-avatar.png';
-            avatar.alt = `${athlete.firstname || 'Athlete'} Profile Picture`;
-        })
-        .catch(err => console.error('Failed to fetch athlete:', err));
+      if (athlete.premium) {
+        document.getElementById('premium-status').style.display = 'inline-block';
+      }
+    })
+    .catch(err => console.error('Failed to fetch athlete:', err));
 
-    // ===== Fetch Athlete Gear =====
-   fetch('/strava/profile/gear')
-       .then(res => res.json())
-       .then(gear => {
-           const list = document.getElementById('gear-list');
-           list.innerHTML = '';
+  // ===== Athlete Gear =====
+  fetch('/strava/profile/gear')
+    .then(res => res.json())
+    .then(gear => {
+      const grid = document.getElementById('gear-grid');
+      grid.innerHTML = '';
 
-           if (!gear || gear.length === 0) {
-               list.innerHTML = '<li>No gear found</li>';
-               return;
-           }
+      if (!gear || gear.length === 0) {
+        grid.innerHTML = '<p>No gear found</p>';
+        return;
+      }
 
-           gear.forEach(g => {
-               const distanceKm = (g.distance ? g.distance / 1000 : 0).toFixed(1);
-               const li = document.createElement('li');
-               li.textContent = `${g.name} (${distanceKm} km used)`;
-               list.appendChild(li);
-           });
-       })
+      gear.sort((a, b) => (b.distance || 0) - (a.distance || 0));
 
-        .catch(err => console.error("Error fetching gear:", err));
+      gear.forEach(g => {
+        const km = ((g.distance || 0) / 1000).toFixed(1);
+        const div = document.createElement('div');
+        div.className = 'gear-card';
 
-    // ===== Fetch Activities for Stats and Weekly Chart =====
-    fetch('/strava/activities')
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to load activities");
-            return res.json();
-        })
-        .then(activities => {
-            if (!activities || activities.length === 0) return;
+        div.innerHTML = `
+          <h3>${g.name}</h3>
+          <p>Used: ${km} km</p>
+          <div class="gear-distance-bar" style="width: ${Math.min(km / 10, 100)}%;"></div>
+          ${g.retired ? '<div class="retired-stamp">Retired</div>' : ''}
+        `;
 
-            let totalDistance = 0;
-            let totalTime = 0;
-            let totalElevation = 0;
-            const weekly = [0, 0, 0, 0, 0, 0, 0]; // Sun → Sat
+        grid.appendChild(div);
+      });
+    })
+    .catch(err => console.error("Error fetching gear:", err));
 
-            activities.forEach(act => {
-                const distance = act.distance || 0;
-                const time = act.elapsed_time || 0;
-                const elevation = act.total_elevation_gain || 0;
+  // ===== Athlete Activities and Charts =====
+  fetch('/strava/activities?per_page=100')
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to load activities");
+      return res.json();
+    })
+    .then(activities => {
+      if (!activities || activities.length === 0) return;
 
-                totalDistance += distance;
-                totalTime += time;
-                totalElevation += elevation;
+      const runs = activities.filter(act => act.type === 'Run');
+      let totalDistance = 0;
+      let totalTime = 0;
+      let totalElevation = 0;
 
-                // Weekly stats
-                const activityDate = new Date(act.start_date);
-                const weekday = activityDate.getDay(); // 0=Sun
-                weekly[weekday] += distance / 1000;
-            });
+      const weeklyRun = [0, 0, 0, 0, 0, 0, 0];
+      const weeklyWeight = [0, 0, 0, 0, 0, 0, 0];
 
-            // Update Stats in DOM
-            document.getElementById('total-distance').innerText = (totalDistance / 1000).toFixed(1) + ' km';
-            document.getElementById('total-runs').innerText = activities.length;
-            document.getElementById('total-time').innerText = (totalTime / 3600).toFixed(1) + ' h';
-            document.getElementById('total-elevation').innerText = totalElevation.toFixed(1) + ' m';
+      runs.forEach(run => {
+        const day = new Date(run.start_date).getDay();
+        totalDistance += run.distance || 0;
+        totalTime += run.elapsed_time || 0;
+        totalElevation += run.total_elevation_gain || 0;
+        weeklyRun[day] += (run.distance || 0) / 1000;
+      });
 
-            // ===== Weekly Chart =====
-            const ctx = document.getElementById('weeklyChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
-                    datasets: [{
-                        label: 'Distance (km)',
-                        data: weekly,
-                        backgroundColor: '#fc4c02',
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.1)' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.1)' } }
-                    }
-                }
-            });
-        })
-        .catch(err => console.error("Error fetching activities:", err));
+      activities.forEach(act => {
+        const day = new Date(act.start_date).getDay();
+        if (act.type === 'WeightTraining' || act.type === 'Workout') {
+          weeklyWeight[day] += (act.elapsed_time || 0) / 60;
+        }
+      });
+
+      document.getElementById('total-distance').innerText = (totalDistance / 1000).toFixed(1) + ' km';
+      document.getElementById('total-runs').innerText = runs.length;
+      document.getElementById('total-time').innerText = (totalTime / 3600).toFixed(1) + ' h';
+      document.getElementById('total-elevation').innerText = totalElevation.toFixed(1) + ' m';
+
+      // ===== Chart Setup =====
+      const ctx = document.getElementById('weeklyChart').getContext('2d');
+      let currentChart;
+
+      function renderChart(label, data, color) {
+        if (currentChart) currentChart.destroy();
+
+        currentChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            datasets: [{
+              label,
+              data,
+              backgroundColor: color,
+              borderRadius: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+
+      // Initial chart render
+      renderChart('Running Distance (km)', weeklyRun, '#fc4c02');
+
+      // Toggle buttons
+      const runBtn = document.getElementById('toggle-run');
+      const weightBtn = document.getElementById('toggle-weight');
+
+      runBtn.addEventListener('click', () => {
+        runBtn.classList.add('active');
+        weightBtn.classList.remove('active');
+        renderChart('Running Distance (km)', weeklyRun, '#fc4c02');
+      });
+
+      weightBtn.addEventListener('click', () => {
+        weightBtn.classList.add('active');
+        runBtn.classList.remove('active');
+        renderChart('Weight Training (min)', weeklyWeight, '#0077cc');
+      });
+    })
+    .catch(err => console.error("Error fetching activities:", err));
 });

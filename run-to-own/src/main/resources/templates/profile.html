@@ -29,13 +29,19 @@
     </div>
 
     <section class="chart-section">
-        <h2>Weekly Distance</h2>
+        <h2>Weekly Summary</h2>
+        <div class="chart-toggle">
+            <button id="toggle-run" class="active">🏃 Run</button>
+            <button id="toggle-weight">🏋️ Weight</button>
+        </div>
         <canvas id="weeklyChart" width="400" height="200"></canvas>
+
     </section>
 
     <section class="gear-section">
-        <h2>Gear</h2>
-        <ul id="gear-list"></ul>
+        <h2>Your Gear</h2>
+        <p id="premium-status" class="premium-tag" style="display: none;">Strava Premium 🟡</p>
+        <div id="gear-grid" class="gear-grid"></div>
     </section>
 </div>
 

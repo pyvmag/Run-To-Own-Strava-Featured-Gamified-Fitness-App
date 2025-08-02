@@ -13,20 +13,13 @@ import java.util.*;
 @Controller
 public class ProfileController {
 
-    private final RestTemplate restTemplate;
-
-    public ProfileController() {
-        this.restTemplate = new RestTemplate();
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/profile")
     public String profilePage() {
-        return "profile"; // profile.html
+        return "profile";
     }
 
-    /**
-     * Return athlete info from session for profile page
-     */
     @GetMapping("/strava/athlete")
     @ResponseBody
     public Athlete getLoggedInAthlete(HttpSession session) {
@@ -40,9 +33,6 @@ public class ProfileController {
         return athlete;
     }
 
-    /**
-     * Fetch athlete stats from Strava API
-     */
     @GetMapping("/strava/profile/stats")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getAthleteStats(HttpSession session) {
@@ -54,12 +44,12 @@ public class ProfileController {
         }
 
         try {
-            String statsUrl = "https://www.strava.com/api/v3/athletes/" + athlete.getId() + "/stats";
+            String url = "https://www.strava.com/api/v3/athletes/" + athlete.getId() + "/stats";
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(accessToken);
 
             ResponseEntity<Map> response = restTemplate.exchange(
-                    statsUrl,
+                    url,
                     HttpMethod.GET,
                     new HttpEntity<>(headers),
                     Map.class
@@ -68,14 +58,11 @@ public class ProfileController {
             return ResponseEntity.ok(response.getBody());
         } catch (Exception ex) {
             Map<String, Object> fallback = new HashMap<>();
-            fallback.put("message", "Unable to fetch stats at the moment.");
+            fallback.put("message", "Stats fetch failed.");
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallback);
         }
     }
 
-    /**
-     * Fetch gear (bikes + shoes)
-     */
     @GetMapping("/strava/profile/gear")
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> getAthleteGear(HttpSession session) {
@@ -86,7 +73,6 @@ public class ProfileController {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(accessToken);
 
-            // Get athlete info from Strava
             ResponseEntity<Map> response = restTemplate.exchange(
                     "https://www.strava.com/api/v3/athlete",
                     HttpMethod.GET,
@@ -95,17 +81,18 @@ public class ProfileController {
             );
 
             Map<String, Object> athleteData = response.getBody();
-            if (athleteData == null) return ResponseEntity.ok(Collections.emptyList());
+            List<Map<String, Object>> gearList = new ArrayList<>();
 
-            List<Map<String, Object>> gear = new ArrayList<>();
-            if (athleteData.containsKey("bikes")) {
-                gear.addAll((List<Map<String, Object>>) athleteData.get("bikes"));
-            }
-            if (athleteData.containsKey("shoes")) {
-                gear.addAll((List<Map<String, Object>>) athleteData.get("shoes"));
+            if (athleteData != null) {
+                if (athleteData.containsKey("bikes")) {
+                    gearList.addAll((List<Map<String, Object>>) athleteData.get("bikes"));
+                }
+                if (athleteData.containsKey("shoes")) {
+                    gearList.addAll((List<Map<String, Object>>) athleteData.get("shoes"));
+                }
             }
 
-            return ResponseEntity.ok(gear);
+            return ResponseEntity.ok(gearList);
         } catch (Exception ex) {
             return ResponseEntity.ok(Collections.emptyList());
         }

@@ -46,3 +46,72 @@ nav .profile-link { color: #fc4c02; font-weight: bold; }
     margin: 0.3rem 0; background: rgba(255,255,255,0.05);
     padding: 0.5rem 1rem; border-radius: 8px;
 }
+.gear-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gear-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: left;
+  position: relative;
+  transition: transform 0.3s;
+}
+
+.gear-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #fc4c02;
+}
+
+.gear-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.gear-distance-bar {
+  height: 6px;
+  background: #fc4c02;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+}
+
+.retired-stamp {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #900;
+  color: white;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.premium-tag {
+  color: gold;
+  font-weight: bold;
+  margin-top: 0.3rem;
+}
+.chart-toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.chart-toggle button {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 20px;
+  background-color: #eee;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chart-toggle button.active {
+  background-color: #fc4c02;
+  color: white;
+}

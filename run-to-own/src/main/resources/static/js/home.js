@@ -1,5 +1,5 @@
 let offset = 0;
-const countPerPage = 5;
+const countPerPage = 7;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const feed = document.getElementById('feed-container');

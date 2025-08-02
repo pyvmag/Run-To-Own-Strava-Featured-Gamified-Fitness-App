@@ -38,7 +38,7 @@ public class AuthController {
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + redirectUri
                 + "&response_type=code"
-                + "&scope=read,activity:read";
+                + "&scope=read_all,profile:read_all,activity:read_all";
     }
 
     @GetMapping("/strava/callback")
