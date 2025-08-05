@@ -29,7 +29,9 @@ public class AuthController {
 
     @GetMapping("/")
     public String loginPage(HttpSession session) {
-        return (session.getAttribute("access_token") != null) ? "redirect:/home" : "login";
+        return (session.getAttribute("access_token") != null)
+                ? "redirect:/home"
+                : "redirect:/strava/authorize"; // bypass login template
     }
 
     @GetMapping("/strava/authorize")
