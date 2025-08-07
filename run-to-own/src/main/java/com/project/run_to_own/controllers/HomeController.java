@@ -14,4 +14,12 @@ public class HomeController {
         }
         return "home"; // home.html
     }
+
+    @GetMapping("/explore")
+    public String explorePage(HttpSession session) {
+        if (session.getAttribute("access_token") == null) {
+            return "redirect:/";
+        }
+        return "explore"; // This serves templates/explore.html
+    }
 }

@@ -29,9 +29,12 @@ public class AuthController {
 
     @GetMapping("/")
     public String loginPage(HttpSession session) {
-        return (session.getAttribute("access_token") != null)
-                ? "redirect:/home"
-                : "redirect:/strava/authorize"; // bypass login template
+        // If the user is already logged in (has a token), redirect to home.
+        if (session.getAttribute("access_token") != null) {
+            return "redirect:/home";
+        }
+        // Otherwise, show them the login page.
+        return "login"; // This will render templates/login.html
     }
 
     @GetMapping("/strava/authorize")

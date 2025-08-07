@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ca03f29c-937f-487e-812f-612174f0bdfc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/model/TileUserStats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/model/TileUserStatsId.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/repositories/TileUserStatsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/aws.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/run-to-own.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/run-to-own/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/controllers/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/controllers/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/model/RunnerOwnership.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/model/Tile.java" beforeDir="false" afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/model/Tile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/repositories/TileRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/repositories/TileRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/service/TileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/run-to-own/src/main/java/com/project/run_to_own/service/TileService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-to-own/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/run-to-own/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="30xbzyOFKggLhIIh84Uju5k1VYp" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ca03f29c-937f-487e-812f-612174f0bdfc" name="Changes" comment="" />
+      <created>1754572439500</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754572439500</updated>
+    </task>
+    <servers />
+  </component>
+</project>
