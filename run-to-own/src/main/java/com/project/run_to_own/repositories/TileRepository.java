@@ -16,4 +16,9 @@ public interface TileRepository extends JpaRepository<Tile, String> {
      */
     List<Tile> findByOwnerId(Long ownerId);
 
+    /**
+     * Finds all tiles that have an owner.
+     * @return A list of all owned tiles.
+     */
+    List<Tile> findAllByOwnerIdIsNotNull();
 }

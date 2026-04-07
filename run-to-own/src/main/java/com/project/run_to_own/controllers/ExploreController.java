@@ -6,16 +6,19 @@ import com.project.run_to_own.model.User;
 import com.project.run_to_own.repositories.TileRepository;
 import com.project.run_to_own.repositories.UserRepository;
 import com.project.run_to_own.service.TileService;
+import com.project.run_to_own.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -32,12 +35,14 @@ import java.util.stream.Collectors;
 public class ExploreController {
 
     private final TileService tileService;
+    private final UserService userService;
     private final TileRepository tileRepository;
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    public ExploreController(TileService tileService, TileRepository tileRepository, UserRepository userRepository) {
+    public ExploreController(TileService tileService, UserService userService, TileRepository tileRepository, UserRepository userRepository) {
         this.tileService = tileService;
+        this.userService = userService;
         this.tileRepository = tileRepository;
         this.userRepository = userRepository;
         this.restTemplate = new RestTemplate();
@@ -48,8 +53,12 @@ public class ExploreController {
         User currentUser = getOrCreateUser(session);
         if (currentUser == null) { return ResponseEntity.status(401).body("User not authenticated"); }
         String accessToken = (String) session.getAttribute("access_token");
+        if (accessToken == null) {
+            return ResponseEntity.status(401).body("Access token not found in session");
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
         int page = 1;
         int totalProcessed = 0;
@@ -74,8 +83,12 @@ public class ExploreController {
         User currentUser = getOrCreateUser(session);
         if (currentUser == null) { return ResponseEntity.status(401).body("User not authenticated"); }
         String accessToken = (String) session.getAttribute("access_token");
+        if (accessToken == null) {
+            return ResponseEntity.status(401).body("Access token not found in session");
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
 
         String url = "https://www.strava.com/api/v3/athlete/activities?per_page=50";
         if (currentUser.getLastSyncTimestamp() != null) {
@@ -164,8 +177,7 @@ public class ExploreController {
     public List<TileDataDto> getAllTiles(HttpSession session) {
         Athlete athlete = (Athlete) session.getAttribute("athlete");
         Long currentUserId = (athlete != null) ? athlete.getId() : -1L;
-        return tileRepository.findAll().stream()
-                .filter(tile -> tile.getOwnerId() != null)
+        return tileRepository.findAllByOwnerIdIsNotNull().stream()
                 .map(tile -> new TileDataDto(
                         tile.getH3Index(),
                         tile.getOwnerName(),
