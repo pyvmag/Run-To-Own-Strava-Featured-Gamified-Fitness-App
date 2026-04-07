@@ -15,7 +15,23 @@ body {
     align-items: center;
     width: 100%;
 }
+/* Footer Styles for "Powered by Strava" logo */
+.app-footer {
+    position: fixed; /* Fixes it to the viewport */
+    bottom: 10px;    /* 10px from the bottom */
+    right: 15px;     /* 15px from the right */
+    z-index: 1000;   /* Ensures it's on top of other elements like the map */
+}
 
+.app-footer img {
+    height: 30px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.app-footer img:hover {
+    opacity: 1;
+}
 .card {
     background: white;
     padding: 3rem;

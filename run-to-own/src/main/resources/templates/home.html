@@ -5,26 +5,49 @@
     <title>Run-to-Own | Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://unpkg.com/maplibre-gl@3.5.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/main.css" />
     <link rel="stylesheet" href="/css/home.css" />
 </head>
 <body>
 <div id="loader">
     <div class="loader-content">
-        <!-- You can swap this out for SVG, animation, etc -->
-        <img src="/images/cycle_route.gif"  class="loader-gif" alt="Loading animation" />
+        <img src="/images/cycle_route.gif" class="loader-gif" alt="Loading animation" />
         <p>Loading your journey...</p>
     </div>
 </div>
 
-<!-- 👤 Navbar -->
-<nav>
-    <img src="/images/logo.png" alt="Run-to-Own Logo" class="logo" />
-    <span class="app-title">Run-to-Own</span>
-    <button id="theme-switch" aria-label="Toggle Theme">🌗</button>
-    <a href="/profile" class="profile-link">Profile</a>
+<nav class="navbar">
+    <a href="/home" class="nav-brand">Run-to-Own</a>
+    <div class="nav-links">
+        <a href="/explore" class="nav-link">Explore</a>
+        <a href="/profile" class="nav-link">Profile</a>
+
+        <div class="dropdown">
+            <button id="friends-dropdown-btn" class="nav-link icon-link">
+                <span>Friends</span>
+                <span id="friend-request-badge" class="badge" style="display: none;"></span>
+            </button>
+            <div id="friends-dropdown-menu" class="dropdown-menu">
+                <div class="dropdown-header">Pending Requests</div>
+                <div id="dropdown-request-list">
+                    <div class="dropdown-item">Loading...</div>
+                </div>
+                <a href="/friends" class="dropdown-footer">Manage All Friends</a>
+            </div>
+        </div>
+        <button id="theme-switch" aria-label="Toggle Theme">🌗</button>
+    </div>
 </nav>
 
-<!-- 🏃 Friends' Runs Section -->
+<div class="streak-widget">
+    <span class="streak-icon">🔥</span>
+    <div class="streak-text">
+        <div class="streak-title">Current Streak</div>
+        <div id="streak-counter" class="streak-value">0 Days</div>
+        <div id="best-streak" class="streak-best">Best: 0 Days</div>
+    </div>
+</div>
+
 <main id="friends-runs">
     <h2>Recent Runs</h2>
     <div id="feed-container" class="feed"></div>
@@ -33,41 +56,13 @@
     <div id="no-more-msg" class="no-more-msg" style="display:none;">No more runs to load.</div>
 </main>
 
-<!-- 🔧 Scripts -->
+<footer class="app-footer">
+    <img src="/images/powered_by_strava_1.png" alt="Powered by Strava" class="strava-logo light-logo">
+    <img src="/images/powered_by_strava_2.png" alt="Powered by Strava" class="strava-logo dark-logo">
+</footer>
+
 <script src="https://unpkg.com/maplibre-gl@3.5.2/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/@mapbox/polyline"></script>
-<script src="/js/home.js"></script>
-
-<script>
-    // 🌓 Apply system theme if dark
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.body.classList.add('dark');
-    }
-
-    // 🌓 Manual theme toggle
-    document.getElementById('theme-switch').addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-    });
-
-    // 🪄 Nav hide on scroll down, show on scroll up
-    const nav = document.querySelector('nav');
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > lastScrollY) {
-        nav.classList.add('nav-hidden');
-      } else {
-        nav.classList.remove('nav-hidden');
-      }
-      lastScrollY = window.scrollY;
-    });
-</script>
-<script>
-    console.log('Theme toggle wired');
-    document.getElementById('theme-switch').addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      console.log('Theme toggled');
-    });
-</script>
-
+<script src="/js/main.js"></script> <script src="/js/home.js"></script>
 </body>
 </html>

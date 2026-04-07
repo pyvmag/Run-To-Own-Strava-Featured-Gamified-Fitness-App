@@ -2,6 +2,7 @@ package com.project.run_to_own.model;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
@@ -13,11 +14,24 @@ public class User {
     private String username;
     private String email;
     private double totalDistance = 0.0;
-
-    // ✅ NEW FIELD to track the last sync time
     private Instant lastSyncTimestamp;
 
+    // ✅ NEW FIELDS FOR STREAKS
+    private int currentStreak = 0;
+    private LocalDate lastActivityDate;
+
+    // Add this field inside your User.java class
+    private int bestStreak = 0;
+
     // --- Getters and Setters ---
+
+    // Add these getter and setter methods
+    public int getBestStreak() {
+        return bestStreak;
+    }
+    public void setBestStreak(int bestStreak) {
+        this.bestStreak = bestStreak;
+    }
 
     public Long getId() {
         return id;
@@ -51,13 +65,29 @@ public class User {
         this.totalDistance = totalDistance;
     }
 
-    // ✅ NEW GETTER AND SETTER for the timestamp
     public Instant getLastSyncTimestamp() {
         return lastSyncTimestamp;
     }
 
     public void setLastSyncTimestamp(Instant lastSyncTimestamp) {
         this.lastSyncTimestamp = lastSyncTimestamp;
+    }
+
+    // ✅ GETTERS AND SETTERS FOR STREAK FIELDS
+    public int getCurrentStreak() {
+        return currentStreak;
+    }
+
+    public void setCurrentStreak(int currentStreak) {
+        this.currentStreak = currentStreak;
+    }
+
+    public LocalDate getLastActivityDate() {
+        return lastActivityDate;
+    }
+
+    public void setLastActivityDate(LocalDate lastActivityDate) {
+        this.lastActivityDate = lastActivityDate;
     }
 
     // --- Helper Methods ---

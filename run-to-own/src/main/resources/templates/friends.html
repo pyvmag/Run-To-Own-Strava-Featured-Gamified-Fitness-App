@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Run-to-Own | Friends</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/friends.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/home" class="nav-brand">Run-to-Own</a>
+    <div>
+        <a href="/explore" class="nav-link">Explore</a>
+        <a href="/profile" class="nav-link">Profile</a>
+    </div>
+</nav>
+<div class="streak-widget">
+    <span class="streak-icon">🔥</span>
+    <div class="streak-text">
+        <div class="streak-title">Current Streak</div>
+        <div id="streak-counter" class="streak-value">0 Days</div>
+        <div id="best-streak" class="streak-best">Best: 0 Days</div>
+    </div>
+</div>
+
+<main class="friends-container">
+    <h1>Find and Manage Friends</h1>
+
+    <section class="card">
+        <h2>Find Other Runners</h2>
+        <div class="search-form">
+            <input type="text" id="search-input" placeholder="Enter username...">
+            <button id="search-btn">Search</button>
+        </div>
+        <div id="search-results" class="user-list"></div>
+    </section>
+
+    <section class="card">
+        <h2>Pending Friend Requests</h2>
+        <div id="pending-requests" class="user-list">
+            <p>Loading requests...</p>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Your Friends</h2>
+        <div id="friends-list" class="user-list">
+            <p>Loading friends...</p>
+        </div>
+    </section>
+
+</main>
+
+<script src="/js/friends.js"></script>
+</body>
+</html>

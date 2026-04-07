@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,16 +43,10 @@ public class ExploreController {
         this.restTemplate = new RestTemplate();
     }
 
-    /**
-     * ✅ NEW: Processes a user's ENTIRE Strava history, page by page.
-     * This is a long-running, one-time operation for new users.
-     */
     @PostMapping("/process-full-history")
     public ResponseEntity<String> processFullHistory(HttpSession session) {
         User currentUser = getOrCreateUser(session);
-        if (currentUser == null) {
-            return ResponseEntity.status(401).body("User not authenticated");
-        }
+        if (currentUser == null) { return ResponseEntity.status(401).body("User not authenticated"); }
         String accessToken = (String) session.getAttribute("access_token");
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
@@ -60,34 +58,21 @@ public class ExploreController {
             ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
                     url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<>() {}
             );
-
             List<Map<String, Object>> activities = response.getBody();
-            if (activities == null || activities.isEmpty()) {
-                break; // Stop when we get an empty page
-            }
-
+            if (activities == null || activities.isEmpty()) { break; }
             processActivities(currentUser, activities);
             totalProcessed += activities.size();
             page++;
         }
-
-        // After processing, set the sync timestamp so future syncs are quick
         currentUser.setLastSyncTimestamp(Instant.now());
         userRepository.save(currentUser);
-
         return ResponseEntity.ok("Full history sync complete. Processed " + totalProcessed + " activities.");
     }
 
-    /**
-     * ✅ RENAMED & IMPROVED: Processes only NEW runs since the last sync.
-     * This is the method the "Sync Latest Runs" button should call.
-     */
     @PostMapping("/process-new-runs")
     public ResponseEntity<String> processNewRuns(HttpSession session) {
         User currentUser = getOrCreateUser(session);
-        if (currentUser == null) {
-            return ResponseEntity.status(401).body("User not authenticated");
-        }
+        if (currentUser == null) { return ResponseEntity.status(401).body("User not authenticated"); }
         String accessToken = (String) session.getAttribute("access_token");
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
@@ -96,27 +81,21 @@ public class ExploreController {
         if (currentUser.getLastSyncTimestamp() != null) {
             url += "&after=" + currentUser.getLastSyncTimestamp().getEpochSecond();
         }
-
         ResponseEntity<List<Map<String, Object>>> response = restTemplate.exchange(
                 url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<>() {}
         );
-
         List<Map<String, Object>> activities = response.getBody();
         if (activities != null && !activities.isEmpty()) {
             processActivities(currentUser, activities);
         }
-
         currentUser.setLastSyncTimestamp(Instant.now());
         userRepository.save(currentUser);
-
         return ResponseEntity.ok("Processed " + (activities != null ? activities.size() : 0) + " new activities.");
     }
 
-    // Helper method to find/create user, used by both endpoints
     private User getOrCreateUser(HttpSession session) {
         Athlete athlete = (Athlete) session.getAttribute("athlete");
         if (athlete == null) return null;
-
         return userRepository.findById(athlete.getId()).orElseGet(() -> {
             User newUser = new User();
             newUser.setId(athlete.getId());
@@ -129,17 +108,56 @@ public class ExploreController {
         });
     }
 
-    // Helper method to process a list of activities
+    /**
+     * Helper method to process a list of activities.
+     * This now includes the logic to calculate and update the user's streak.
+     */
     private void processActivities(User user, List<Map<String, Object>> activities) {
+        // Sort activities by date to ensure correct streak calculation
+        activities.sort(Comparator.comparing(a -> Instant.parse((String) a.get("start_date"))));
+
         double totalDistanceOfSync = 0;
+        LocalDate lastActivityDate = user.getLastActivityDate();
+        int currentStreak = user.getCurrentStreak();
+        int bestStreak = user.getBestStreak();
+
         for (Map<String, Object> activity : activities) {
             if (activity.get("distance") instanceof Number) {
                 totalDistanceOfSync += ((Number) activity.get("distance")).doubleValue();
             }
+
+            // --- Streak Calculation Logic ---
+            Instant activityInstant = Instant.parse((String) activity.get("start_date"));
+            LocalDate activityDate = activityInstant.atZone(ZoneOffset.UTC).toLocalDate();
+
+            if (lastActivityDate != null) {
+                long daysBetween = ChronoUnit.DAYS.between(lastActivityDate, activityDate);
+                if (daysBetween == 1) {
+                    currentStreak++; // Consecutive day, continue streak.
+                } else if (daysBetween > 1) {
+                    currentStreak = 1; // Day was missed, reset streak to 1.
+                }
+                // If daysBetween is 0 (multiple activities on same day), streak is unchanged.
+            } else {
+                currentStreak = 1; // This is the user's first ever activity.
+            }
+            lastActivityDate = activityDate; // Update the last known activity date.
+
+            // Update best streak if the current one is higher
+            if (currentStreak > bestStreak) {
+                bestStreak = currentStreak;
+            }
+
+            // Send the activity to the TileService to process territories
             tileService.processStravaActivity(user, activity);
         }
+
+        // Update the user object with the new totals and streak information
         user.addDistance(totalDistanceOfSync);
-        // The final save is handled by the calling method
+        user.setCurrentStreak(currentStreak);
+        user.setLastActivityDate(lastActivityDate);
+        user.setBestStreak(bestStreak);
+        // The final save of the user object is handled by the calling methods
     }
 
     @GetMapping("/tiles")

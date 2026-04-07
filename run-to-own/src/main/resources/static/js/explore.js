@@ -1,57 +1,106 @@
 document.addEventListener('DOMContentLoaded', () => {
     const map = new maplibregl.Map({
         container: 'map',
-        style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=Nr1XalmqB4Xp2Bwm202p',
-        center: [74.2433, 16.7050], // Centered on Kolhapur
-        zoom: 13 // Zooming in a bit more to make the hexagon easy to see
+        style: 'https://api.maptiler.com/maps/streets-v2-dark/style.json?key=AxOJY4BnQVnKnsedKJCC', // PASTE YOUR KEY HERE
+        center: [74.2433, 16.7050],
+        zoom: 11
     });
 
-    // We are ignoring the sync button and API calls for this test.
+   const syncButton = document.getElementById('sync-runs-btn');
+       const loadingIndicator = document.getElementById('loading-indicator');
 
-    // When the map loads, we will try to draw ONE hexagon.
-    map.on('load', () => {
-        console.log("Map loaded. Attempting to draw one hardcoded hexagon.");
+       // --- SELF-CONTAINED WINDING ORDER FIX ---
+       // This function calculates the area of a polygon. A positive area means it's
+       // wound clockwise (CW), and a negative area means counter-clockwise (CCW).
+       function signedArea(ring) {
+           let area = 0;
+           for (let i = 0; i < ring.length; i++) {
+               const j = (i + 1) % ring.length;
+               area += ring[i][0] * ring[j][1];
+               area -= ring[j][0] * ring[i][1];
+           }
+           return area / 2;
+       }
 
-        // A single, known H3 index for a tile in the center of Kolhapur.
-        const testH3Index = '8928308283bffff';
+       // This function ensures the polygon is wound counter-clockwise, as GeoJSON requires.
+       function rewind(polygon) {
+           // The GeoJSON spec requires the outer ring to be counter-clockwise.
+           if (signedArea(polygon[0]) > 0) {
+               polygon[0].reverse();
+           }
+           return polygon;
+       }
+       // --- END OF FIX ---
 
-        // Use the same logic as before to create the shape.
-        const boundaryLatLng = h3.cellToBoundary(testH3Index);
-        const boundaryLngLat = boundaryLatLng.map(coord => [coord[1], coord[0]]);
-        boundaryLngLat.push(boundaryLngLat[0]); // Close the loop
+       const loadAndDrawTiles = async () => {
+           try {
+               const response = await fetch('/api/explore/tiles');
+               if (!response.ok) throw new Error('Failed to fetch tiles');
+               const tiles = await response.json();
 
-        const feature = {
-            'type': 'Feature',
-            'geometry': {
-                'type': 'Polygon',
-                'coordinates': [boundaryLngLat]
-            },
-            'properties': {}
-        };
+               const features = tiles.map(tile => {
+                   const boundaryLatLng = h3.h3ToGeoBoundary(tile.h3Index);
+                   const boundaryLngLat = boundaryLatLng.map(coord => [coord[1], coord[0]]);
+                   boundaryLngLat.push(boundaryLngLat[0]);
 
-        console.log("Generated test GeoJSON feature:", feature);
+                   return {
+                       'type': 'Feature',
+                       'geometry': {
+                           'type': 'Polygon',
+                           // ✅ FIX: Manually correct the winding order of the coordinates
+                           'coordinates': rewind([boundaryLngLat])
+                       },
+                       'properties': {
+                           'ownerName': tile.ownerName,
+                           'isCurrentUserOwner': tile.isCurrentUserOwner
+                       }
+                   };
+               });
 
-        const geoJsonData = {
-            'type': 'FeatureCollection',
-            'features': [feature]
-        };
+               const geoJsonData = { 'type': 'FeatureCollection', 'features': features };
 
-        // Add the source and layer to the map.
-        map.addSource('test-tile-source', {
-            'type': 'geojson',
-            'data': geoJsonData
-        });
+               const geoJsonSource = map.getSource('tiles');
+               if (geoJsonSource) {
+                   geoJsonSource.setData(geoJsonData);
+               } else {
+                   map.addSource('tiles', { 'type': 'geojson', 'data': geoJsonData });
+                   map.addLayer({
+                       'id': 'tiles-layer',
+                       'type': 'fill',
+                       'source': 'tiles',
+                       'paint': {
+                           'fill-color': [
+                               'case',
+                               ['==', ['get', 'isCurrentUserOwner'], true],
+                               '#fc4c02',
+                               '#007cbf'
+                           ],
+                           'fill-opacity': 0.6,
+                           'fill-outline-color': '#ffffff'
+                       }
+                   });
+               }
+           } catch (error) {
+               console.error("Error loading tiles:", error);
+           }
+       };
 
-        map.addLayer({
-            'id': 'test-tile-layer',
-            'type': 'fill',
-            'source': 'test-tile-source',
-            'paint': {
-                'fill-color': '#FF0000', // Bright Red
-                'fill-opacity': 0.7
-            }
-        });
+       const syncRuns = async () => {
+           loadingIndicator.style.display = 'block';
+           syncButton.disabled = true;
+           try {
+               const response = await fetch('/api/explore/process-new-runs', { method: 'POST' });
+               if (!response.ok) throw new Error('Sync failed');
+               await loadAndDrawTiles();
+           } catch (error) {
+               console.error("Error processing runs:", error);
+           } finally {
+               loadingIndicator.style.display = 'none';
+               syncButton.disabled = false;
+           }
+       };
 
-        console.log("Source and layer for test hexagon have been added to the map.");
-    });
-});
+       syncButton.addEventListener('click', syncRuns);
+       map.on('load', syncRuns);
+   });
+

@@ -165,4 +165,21 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     })
     .catch(err => console.error("Error fetching activities:", err));
-});
+
+    // Add this new fetch call inside the 'DOMContentLoaded' event listener in your profile.js
+
+    // --- Fetch User for Streak Data ---
+// In your profile.js, find the fetch('/api/user/details') call and update it
+
+fetch('/api/user/details')
+    .then(res => res.json())
+    .then(user => {
+        if (user && user.currentStreak > 0) {
+            document.getElementById('current-streak').innerHTML = `🔥 ${user.currentStreak} days`;
+        }
+        // ✅ NEW: Display the best streak
+        if (user && user.bestStreak > 0) {
+            document.getElementById('best-streak').innerHTML = `🏆 ${user.bestStreak} days`;
+        }
+    })
+    .catch(err => console.error('Failed to fetch user details:', err));});

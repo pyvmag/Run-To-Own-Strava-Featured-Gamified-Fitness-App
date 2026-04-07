@@ -11,3 +11,4 @@ public class RunToOwnApplication {
 	}
 
 }
+///see what happening is our streak widget has kinda a flaw.... it uses a placeholder to display the streak.,,, now what i want you to do is... process teh user whole acitvity

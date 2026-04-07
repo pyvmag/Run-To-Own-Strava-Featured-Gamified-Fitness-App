@@ -1,0 +1,163 @@
+/* friends.css */
+:root {
+    --card-bg: #1e1e1e;
+    --text-color: #f1f1f1;
+    --accent: #fc4c02;
+    --input-bg: #2a2a2a;
+    --border-color: #333;
+    --btn-primary-bg: #fc4c02;
+    --btn-secondary-bg: #333;
+    --btn-accept-bg: #28a745;
+    --btn-decline-bg: #dc3545;
+}
+
+.friends-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    display: grid;
+    gap: 1.5rem;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#search-input {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+#search-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--btn-primary-bg);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+#search-btn:hover {
+    background-color: #e04402;
+}
+
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--input-bg);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+}
+
+.user-info {
+    font-weight: 500;
+}
+.friends-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    display: grid;
+    gap: 1.5rem;
+}
+.card {
+    background: #1e1e1e;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+.card h2 {
+    margin-top: 0;
+    color: #fc4c02;
+    border-bottom: 2px solid #fc4c02;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+#search-input {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid #333;
+    background: #2a2a2a;
+    color: #f1f1f1;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+#search-btn, .action-btn {
+    padding: 0.75rem 1.5rem;
+    background: #fc4c02;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2a2a2a;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+}
+.user-actions .accept-btn { background-color: #28a745; margin-left: 0.5rem; }
+.user-actions .decline-btn { background-color: #dc3545; margin-left: 0.5rem; }
+.user-actions button {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+/* main.css - New styles for Best Streak */
+
+.streak-best {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 2px;
+}
+.add-friend-btn { background-color: var(--btn-primary-bg); }
+.accept-btn { background-color: var(--btn-accept-bg); }
+.decline-btn { background-color: var(--btn-decline-bg); }
+.pending-btn { background-color: var(--btn-secondary-bg); cursor: not-allowed; }

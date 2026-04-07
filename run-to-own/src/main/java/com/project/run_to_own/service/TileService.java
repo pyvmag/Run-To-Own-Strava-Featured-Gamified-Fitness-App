@@ -38,26 +38,30 @@ public class TileService {
 
     @Transactional
     public void processStravaActivity(User user, Map<String, Object> stravaActivity) {
-        // ... (code to get polyline and calculate distances remains the same) ...
         Map<String, Object> mapData = (Map<String, Object>) stravaActivity.get("map");
         if (mapData == null || mapData.get("summary_polyline") == null) { return; }
         String encodedPolyline = (String) mapData.get("summary_polyline");
         List<LatLng> path = new EncodedPolyline(encodedPolyline).decodePath();
         if (path.size() < 2) { return; }
+
         Coordinate[] pathCoords = path.stream().map(latLng -> new Coordinate(latLng.lng, latLng.lat)).toArray(Coordinate[]::new);
         LineString runPath = geometryFactory.createLineString(pathCoords);
+
         Set<String> h3Indexes = new HashSet<>();
         for (int i = 0; i < path.size() - 1; i++) {
             LatLng start = path.get(i);
-            LatLng end = path.get(i);
+            LatLng end = path.get(i + 1); // ✅ FINAL BUG FIX: Correctly get the end point of the segment
+
             long startH3 = h3.geoToH3(start.lat, start.lng, H3_RESOLUTION);
             long endH3 = h3.geoToH3(end.lat, end.lng, H3_RESOLUTION);
+
             try {
-                h3.h3Line(startH3, endH3).forEach(h3Long -> h3Indexes.add(String.valueOf(h3Long)));
+                h3.h3Line(startH3, endH3).forEach(h3Long -> h3Indexes.add(h3.h3ToString(h3Long)));
             } catch (LineUndefinedException e) {
                 System.err.println("Could not calculate H3 line segment, skipping: " + e.getMessage());
             }
         }
+
         Map<String, Double> tileDistances = new HashMap<>();
         for (String h3Index : h3Indexes) {
             double distanceInMeters = calculateDistanceInTile(runPath, h3Index);
@@ -66,16 +70,13 @@ public class TileService {
             }
         }
 
-        // This loop contains the critical fix
         for (Map.Entry<String, Double> entry : tileDistances.entrySet()) {
             String h3Index = entry.getKey();
             Double distance = entry.getValue();
 
-            // ✅ CORRECTED LOGIC
-            // Find the tile, or if it doesn't exist, create AND SAVE it immediately.
             Tile tile = tileRepository.findById(h3Index).orElseGet(() -> {
                 Tile newTile = new Tile(h3Index);
-                return tileRepository.save(newTile); // Save the new tile to the DB
+                return tileRepository.save(newTile);
             });
 
             TileUserStats userStats = tileUserStatsRepository.findByUser_IdAndTile_H3Index(user.getId(), h3Index)
@@ -101,7 +102,7 @@ public class TileService {
     }
 
     private double calculateDistanceInTile(LineString runPath, String h3Index) {
-        List<GeoCoord> boundaryGeoCoords = h3.h3ToGeoBoundary(Long.parseLong(h3Index));
+        List<GeoCoord> boundaryGeoCoords = h3.h3ToGeoBoundary(h3.stringToH3(h3Index));
         boundaryGeoCoords.add(boundaryGeoCoords.get(0));
         Coordinate[] boundaryCoords = boundaryGeoCoords.stream().map(g -> new Coordinate(g.lng, g.lat)).toArray(Coordinate[]::new);
         Polygon hexagon = geometryFactory.createPolygon(boundaryCoords);

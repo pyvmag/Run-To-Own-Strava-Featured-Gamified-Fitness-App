@@ -65,3 +65,55 @@ body, html {
     margin-top: 5px;
     font-size: 0.9em;
 }
+/* Footer Styles */
+.app-footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 2rem;
+}
+
+.app-footer img {
+    height: 30px;
+    opacity: 0.7;
+}
+/* main.css - New styles for Best Streak */
+
+.streak-widget {
+    position: fixed;
+    bottom: 80px; /* Positioned above the Strava footer */
+    right: 15px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--card-bg, #1e1e1e);
+    padding: 10px 16px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border: 1px solid #333;
+    transition: background-color 0.3s;
+}
+
+.streak-icon {
+    font-size: 1.8rem;
+}
+
+.streak-text {
+    line-height: 1.2;
+}
+
+.streak-title {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.streak-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--accent, #fc4c02);
+}
+.streak-best {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 2px;
+}
